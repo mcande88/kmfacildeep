@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Testar API KM Fácil</title>
+</head>
+<body>
+  <h2>Testar /api/auth</h2>
+  <form id="authForm">
+    <input name="empresa" placeholder="Empresa" value="Noroeste" required>
+    <input name="nome_motorista" placeholder="Primeiro nome" value="Murici" required>
+    <input name="cpf5" placeholder="CPF5" value="31117" required>
+    <button type="submit">Testar API</button>
+  </form>
+  <pre id="resultado"></pre>
+
+  <script>
+    document.getElementById('authForm').onsubmit = async function (e) {
+      e.preventDefault();
+      const form = e.target;
+      const body = {
+        empresa: form.empresa.value,
+        nome_motorista: form.nome_motorista.value,
+        cpf5: form.cpf5.value
+      };
+      const resp = await fetch('https://kmfacil-f6na.vercel.app/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      document.getElementById('resultado').textContent = await resp.text();
+    };
+  </script>
+</body>
+</html>
