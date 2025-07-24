@@ -1,39 +1,33 @@
 const Airtable = require('airtable');
-const base = new Airtable({
-  apiKey: process.env.AIRTABLE_API_KEY
-}).base(process.env.AIRTABLE_BASE_ID);
+const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 
 module.exports = async (req, res) => {
-  // --- CABEÇALHO CORS UNIVERSAL ---
+  // CORS para aceitar requisições de qualquer lugar
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // Preflight request (CORS)
+  // Libera o preflight do navegador (browser sempre chama OPTIONS antes do POST)
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // Apenas aceita POST!
+  // Só aceita POST!
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método não permitido' });
   }
 
-  // Suporte a JSON no body do request
-  let empresa, nome_motorista, cpf5;
-  try {
-    if (req.body && typeof req.body === 'object') {
-      ({ empresa, nome_motorista, cpf5 } = req.body);
-    } else {
-      // Caso venha string (às vezes Vercel não faz parse automático)
-      const parsed = JSON.parse(req.body);
-      empresa = parsed.empresa;
-      nome_motorista = parsed.nome_motorista;
-      cpf5 = parsed.cpf5;
+  // --------- Aqui é a parte que resolve seu erro! ---------
+  let body = req.body;
+  if (!body || typeof body === 'string') {
+    try {
+      body = JSON.parse(body || '{}');
+    } catch {
+      return res.status(400).json({ error: 'JSON inválido' });
     }
-  } catch {
-    return res.status(400).json({ error: 'Body inválido' });
   }
+  const { empresa, nome_motorista, cpf5 } = body;
+  // --------------------------------------------------------
 
   if (!empresa || !nome_motorista || !cpf5) {
     return res.status(400).json({ error: 'Campos obrigatórios faltando' });
