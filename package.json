@@ -1,0 +1,13 @@
+{
+  "name": "kmfacil",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "airtable": "^0.11.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3"
+  }
+}
